@@ -19,6 +19,14 @@ namespace WebdotNet.Controllers
         public IActionResult Create()
         {
             return View();
+        }//this is for getting input from user
+        //when we have input, we will create
+        [HttpPost]
+        public IActionResult Create(Category obj)
+        {   
+            _db.Categories.Add(obj);
+            _db.SaveChanges();
+            return RedirectToAction("Index");
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace WebdotNet.Models
 {
@@ -7,7 +8,9 @@ namespace WebdotNet.Models
         [Key]
         public int ID { get; set; } //if we set this as the 'classname'+'entity' this will be treated as primary key\
         [Required]
+        [DisplayName("Category Name")]
         public string Name { get; set; }
+        [DisplayName("Display Order")]
         public int DisplayOrder { get; set; }
     }
 }
