@@ -2,20 +2,23 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using WebdotNet.DataAccess.Data;
+using WebdotNet.DataAccess.Repository;
+using WebdotNet.DataAccess.Repository.IRepository;
 using WebdotNet.Models;
 
-namespace WebdotNet.Controllers
+namespace WebdotNet.Areas.Admin.Controllers
 {
+    [Area("Admin")]
     public class CategoryController : Controller
-    {   
-        private readonly ApplicationDbContext _db;
-        public CategoryController(ApplicationDbContext db)
+    {
+        private readonly IUnitOfWork _unitOfWork;
+        public CategoryController(IUnitOfWork UnitOfWork)
         {
-            _db = db;
+            _unitOfWork = UnitOfWork;
         }
         public IActionResult Index()
         {
-            List<Category> objCategory = _db.Categories.ToList();
+            List<Category> objCategory = _unitOfWork.Category.GetAll().ToList();
             return View(objCategory);
         }
         public IActionResult Create()
@@ -25,19 +28,20 @@ namespace WebdotNet.Controllers
         //when we have input, we will create
         [HttpPost]
         public IActionResult Create(Category obj)
-        {   if(obj.Name != null && obj.Name == obj.DisplayOrder.ToString())
+        {
+            if (obj.Name != null && obj.Name == obj.DisplayOrder.ToString())
             {
                 ModelState.AddModelError("Name" /* if we dont specify any property like "name", the summary of Model only will not display this as error of name*/, "Name and DisplayOrder can not be the same");
             }//Custom validation for system
             if (ModelState.IsValid)
             {
-                _db.Categories.Add(obj);
-                _db.SaveChanges();
+                _unitOfWork.Category.Add(obj);
+                _unitOfWork.Save();
                 TempData["success"] = "Category has been created successfully";
                 return RedirectToAction("Index");
             }
             return View();
-            
+
         }
         public IActionResult Edit(int? id)
         {
@@ -45,8 +49,8 @@ namespace WebdotNet.Controllers
             {
                 return NotFound();
             }
-            Category? categoryfromDb = _db.Categories.Find(id);
-            if(categoryfromDb == null)
+            Category? categoryfromDb = _unitOfWork.Category.Get(u => u.ID == id);
+            if (categoryfromDb == null)
             {
                 return NotFound();
             }
@@ -57,8 +61,8 @@ namespace WebdotNet.Controllers
         {
             if (ModelState.IsValid)
             {
-                _db.Categories.Update(obj);
-                _db.SaveChanges();
+                _unitOfWork.Category.Update(obj);
+                _unitOfWork.Save();
                 TempData["success"] = "Category has been updated successfully";
                 return RedirectToAction("Index");
             }
@@ -72,7 +76,7 @@ namespace WebdotNet.Controllers
             {
                 return NotFound();
             }
-            Category? categoryfromDb = _db.Categories.Find(id);
+            Category? categoryfromDb = _unitOfWork.Category.Get(u => u.ID == id);
             if (categoryfromDb == null)
             {
                 return NotFound();
@@ -82,15 +86,15 @@ namespace WebdotNet.Controllers
         [HttpPost, ActionName("Delete")]
         public IActionResult DeletePOST(int? id)
         {
-            Category obj = _db.Categories.Find(id);
-            if (obj.ID == null)
+            Category obj = _unitOfWork.Category.Get(u => u.ID == id);
+            if (obj == null)
             {
                 return NotFound();
-            }  
-                _db.Categories.Remove(obj);
-                _db.SaveChanges();
-                TempData["success"] = "Category has been removed";
-                return RedirectToAction("Index");
+            }
+            _unitOfWork.Category.Remove(obj);
+            _unitOfWork.Save();
+            TempData["success"] = "Category has been removed";
+            return RedirectToAction("Index");
 
         }
     }
