@@ -4,15 +4,15 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using WebdotNet.Data;
+using WebdotNet.DataAccess.Data;
 
 #nullable disable
 
-namespace WebdotNet.Migrations
+namespace WebdotNet.DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241016072621_AddCategory")]
-    partial class AddCategory
+    [Migration("20241016084024_SeedCategory1")]
+    partial class SeedCategory1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -42,6 +42,44 @@ namespace WebdotNet.Migrations
                     b.HasKey("ID");
 
                     b.ToTable("Categories");
+
+                    b.HasData(
+                        new
+                        {
+                            ID = 1,
+                            DisplayOrder = 1,
+                            Name = "Action"
+                        },
+                        new
+                        {
+                            ID = 2,
+                            DisplayOrder = 2,
+                            Name = "Horror"
+                        },
+                        new
+                        {
+                            ID = 3,
+                            DisplayOrder = 3,
+                            Name = "SciFi"
+                        },
+                        new
+                        {
+                            ID = 4,
+                            DisplayOrder = 4,
+                            Name = "History"
+                        },
+                        new
+                        {
+                            ID = 5,
+                            DisplayOrder = 5,
+                            Name = "Comedy"
+                        },
+                        new
+                        {
+                            ID = 6,
+                            DisplayOrder = 6,
+                            Name = "Romance"
+                        });
                 });
 #pragma warning restore 612, 618
         }

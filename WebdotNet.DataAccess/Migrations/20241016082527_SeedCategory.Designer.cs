@@ -2,17 +2,20 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using WebdotNet.Data;
+using WebdotNet.DataAccess.Data;
 
 #nullable disable
 
-namespace WebdotNet.Migrations
+namespace WebdotNet.DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241016082527_SeedCategory")]
+    partial class SeedCategory
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -70,12 +73,6 @@ namespace WebdotNet.Migrations
                             ID = 5,
                             DisplayOrder = 5,
                             Name = "Comedy"
-                        },
-                        new
-                        {
-                            ID = 6,
-                            DisplayOrder = 6,
-                            Name = "Romance"
                         });
                 });
 #pragma warning restore 612, 618

@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using WebdotNet.Models;
 
-namespace WebdotNet.Data
+namespace WebdotNet.DataAccess.Data
 {
     public class ApplicationDbContext : DbContext
     {

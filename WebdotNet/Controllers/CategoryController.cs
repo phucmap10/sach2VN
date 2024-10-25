@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using WebdotNet.Data;
+using WebdotNet.DataAccess.Data;
 using WebdotNet.Models;
 
 namespace WebdotNet.Controllers
