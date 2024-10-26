@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace WebdotNet.Models
 {
@@ -48,6 +49,7 @@ namespace WebdotNet.Models
 
         public string Category { get; set; }
         [Display(Name = "Link of image")]
+        [ValidateNever]
         public string imgUrl { get; set; }
 
 

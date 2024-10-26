@@ -10,7 +10,7 @@
     </div>
 
     <div class="card-body p-4">
-        <form method="post" class="row">
+        <form method="post" class="row" enctype="multipart/form-data">
             <div class="border p-3">
                 <div class="form-floating py-2 col-12">
 
@@ -25,7 +25,6 @@
                 <div class="form-floating py-2 col-12">
                     <textarea asp-for="Description" class="form-control border-0 shadow"></textarea>
                     <label asp-for="Description" class="ms-2"></label>
-                    <span asp-validation-for="Description" class="text-danger"></span>
                 </div>
                 <div class="form-floating py-2 col-12">
                     <input asp-for="Author" class="form-control border-0 shadow" />
@@ -65,9 +64,8 @@
                     <span asp-validation-for="Category" class="text-danger"></span>
                 </div>
                 <div class="form-floating py-2 col-12">
-                    <input asp-for="imgUrl" class="form-control border-0 shadow" />
+                    <input type="file" name="file" class="form-control border-0 shadow" />
                     <label asp-for="imgUrl" class="ms-2"></label>
-                    <span asp-validation-for="imgUrl" class="text-danger"></span>
                 </div>
                 <div class="row pt-3">
                     <div class="col-6">
@@ -87,6 +85,31 @@
 
 @section Scripts {
     @{
+        <script>
+            tinymce.init({
+              selector: 'textarea',
+              plugins: [
+                // Core editing features
+                'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'image', 'link', 'lists', 'media', 'searchreplace', 'table', 'visualblocks', 'wordcount',
+                // Your account includes a free trial of TinyMCE premium features
+                // Try the most popular premium features until Nov 9, 2024:
+                'checklist', 'mediaembed', 'casechange', 'export', 'formatpainter', 'pageembed', 'a11ychecker', 'tinymcespellchecker', 'permanentpen', 'powerpaste', 'advtable', 'advcode', 'editimage', 'advtemplate', 'ai', 'mentions', 'tinycomments', 'tableofcontents', 'footnotes', 'mergetags', 'autocorrect', 'typography', 'inlinecss', 'markdown',
+                // Early access to document converters
+                'importword', 'exportword', 'exportpdf'
+              ],
+              toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
+              tinycomments_mode: 'embedded',
+              tinycomments_author: 'Author name',
+              mergetags_list: [
+                { value: 'First.Name', title: 'First Name' },
+                { value: 'Email', title: 'Email' },
+              ],
+              ai_request: (request, respondWith) => respondWith.string(() => Promise.reject('See docs to implement AI Assistant')),
+              exportpdf_converter_options: { 'format': 'Letter', 'margin_top': '1in', 'margin_right': '1in', 'margin_bottom': '1in', 'margin_left': '1in' },
+              exportword_converter_options: { 'document': { 'size': 'Letter' } },
+              importword_converter_options: { 'formatting': { 'styles': 'inline', 'resets': 'inline',	'defaults': 'inline', } },
+            });
+        </script>
         <partial name="_ValidationScriptsPartial" />
         //This is JQuery script that help with the client side validation, no need to reset page ...
     }

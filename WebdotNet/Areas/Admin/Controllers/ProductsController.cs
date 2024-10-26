@@ -11,10 +11,12 @@ namespace WebdotNet.Areas.Admin.Controllers
     [Area("Admin")]
     public class ProductsController : Controller
     {
+        private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly IUnitOfWork _unitOfWork;
-        public ProductsController(IUnitOfWork UnitOfWork)
+        public ProductsController(IUnitOfWork UnitOfWork, IWebHostEnvironment webHostEnvironment)
         {
             _unitOfWork = UnitOfWork;
+            _webHostEnvironment = webHostEnvironment;
         }
         public IActionResult Index()
         {
@@ -39,8 +41,19 @@ namespace WebdotNet.Areas.Admin.Controllers
         }//this is for getting input from user
         //when we have input, we will create
         [HttpPost]
-        public IActionResult Create(Products obj)
-        {   
+        public IActionResult Create(Products obj, IFormFile? file)
+        {
+            string wwwRootPath = _webHostEnvironment.WebRootPath;
+            if(file != null)
+            {
+                string file_name = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+                string productPath = Path.Combine(wwwRootPath, @"images\products");
+                using (var fileStream = new FileStream(Path.Combine(productPath, file_name), FileMode.Create))
+                {
+                    file.CopyTo(fileStream);
+                }
+                obj.imgUrl = @"\images\products\" + file_name;
+            }
             //Custom validation for system
             if (ModelState.IsValid)
             {
@@ -72,8 +85,9 @@ namespace WebdotNet.Areas.Admin.Controllers
             return View(ProductfromDb);
         }
         [HttpPost]
-        public IActionResult Edit(Products obj)
+        public IActionResult Edit(Products obj, IFormFile? file)
         {
+
             if (ModelState.IsValid)
             {
                 _unitOfWork.Products.Update(obj);
