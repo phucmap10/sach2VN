@@ -19,11 +19,22 @@ namespace WebdotNet.Areas.Admin.Controllers
         public IActionResult Index()
         {
             List<Products> objProduct = _unitOfWork.Products.GetAll().ToList();
+            IEnumerable<SelectListItem> CategoryList = _unitOfWork.Category.GetAll().Select(i => new SelectListItem
+            {
+                Text = i.Name,
+                Value = i.Name
+            });
             return View(objProduct);
         }
         public IActionResult Create()
         {
-            
+            List<Products> objProduct = _unitOfWork.Products.GetAll().ToList();
+            IEnumerable<SelectListItem> CategoryList = _unitOfWork.Category.GetAll().Select(i => new SelectListItem
+            {
+                Text = i.Name,
+                Value = i.Name
+            });
+            ViewBag.CategoryList = CategoryList;
             return View();
         }//this is for getting input from user
         //when we have input, we will create
@@ -46,11 +57,18 @@ namespace WebdotNet.Areas.Admin.Controllers
             {
                 return NotFound();
             }
+
             Products? ProductfromDb = _unitOfWork.Products.Get(u => u.ID == id);
             if (ProductfromDb == null)
             {
                 return NotFound();
             }
+            IEnumerable<SelectListItem> CategoryList = _unitOfWork.Category.GetAll().Select(i => new SelectListItem
+            {
+                Text = i.Name,
+                Value = i.Name
+            });
+            ViewBag.CategoryList = CategoryList;
             return View(ProductfromDb);
         }
         [HttpPost]
