@@ -7,19 +7,24 @@
 namespace WebdotNet.DataAccess.Migrations
 {
     /// <inheritdoc />
-    public partial class seedProducts : Migration
+    public partial class a : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AlterColumn<string>(
-                name: "Name",
-                table: "Categories",
-                type: "nvarchar(30)",
-                maxLength: 30,
-                nullable: false,
-                oldClrType: typeof(string),
-                oldType: "nvarchar(max)");
+            migrationBuilder.CreateTable(
+                name: "Categories",
+                columns: table => new
+                {
+                    ID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
+                    DisplayOrder = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Categories", x => x.ID);
+                });
 
             migrationBuilder.CreateTable(
                 name: "Products",
@@ -27,7 +32,7 @@ namespace WebdotNet.DataAccess.Migrations
                 {
                     ID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Tilte = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Author = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ISBN = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -43,8 +48,21 @@ namespace WebdotNet.DataAccess.Migrations
                 });
 
             migrationBuilder.InsertData(
+                table: "Categories",
+                columns: new[] { "ID", "DisplayOrder", "Name" },
+                values: new object[,]
+                {
+                    { 1, 1, "Action" },
+                    { 2, 2, "Horror" },
+                    { 3, 3, "SciFi" },
+                    { 4, 4, "History" },
+                    { 5, 5, "Comedy" },
+                    { 6, 6, "Romance" }
+                });
+
+            migrationBuilder.InsertData(
                 table: "Products",
-                columns: new[] { "ID", "Author", "Category", "Description", "ISBN", "ListPrice", "Price", "Price100", "Price50", "Tilte" },
+                columns: new[] { "ID", "Author", "Category", "Description", "ISBN", "ListPrice", "Price", "Price100", "Price50", "Title" },
                 values: new object[,]
                 {
                     { 1, "Suzanne Collins", "Action", "A dystopian novel set in a post-apocalyptic world.", "9780439023481", 10.99, 9.9900000000000002, 7.9900000000000002, 8.9900000000000002, "The Hunger Games" },
@@ -64,16 +82,10 @@ namespace WebdotNet.DataAccess.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Products");
+                name: "Categories");
 
-            migrationBuilder.AlterColumn<string>(
-                name: "Name",
-                table: "Categories",
-                type: "nvarchar(max)",
-                nullable: false,
-                oldClrType: typeof(string),
-                oldType: "nvarchar(30)",
-                oldMaxLength: 30);
+            migrationBuilder.DropTable(
+                name: "Products");
         }
     }
 }

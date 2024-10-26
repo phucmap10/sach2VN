@@ -11,8 +11,8 @@ using WebdotNet.DataAccess.Data;
 namespace WebdotNet.DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241025134320_seedProducts")]
-    partial class seedProducts
+    [Migration("20241026125313_a")]
+    partial class a
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -119,7 +119,7 @@ namespace WebdotNet.DataAccess.Migrations
                     b.Property<double>("Price50")
                         .HasColumnType("float");
 
-                    b.Property<string>("Tilte")
+                    b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)");
@@ -140,7 +140,7 @@ namespace WebdotNet.DataAccess.Migrations
                             Price = 9.9900000000000002,
                             Price100 = 7.9900000000000002,
                             Price50 = 8.9900000000000002,
-                            Tilte = "The Hunger Games"
+                            Title = "The Hunger Games"
                         },
                         new
                         {
@@ -153,7 +153,7 @@ namespace WebdotNet.DataAccess.Migrations
                             Price = 7.9900000000000002,
                             Price100 = 5.9900000000000002,
                             Price50 = 6.9900000000000002,
-                            Tilte = "Dracula"
+                            Title = "Dracula"
                         },
                         new
                         {
@@ -166,7 +166,7 @@ namespace WebdotNet.DataAccess.Migrations
                             Price = 8.9900000000000002,
                             Price100 = 6.9900000000000002,
                             Price50 = 7.9900000000000002,
-                            Tilte = "Dune"
+                            Title = "Dune"
                         },
                         new
                         {
@@ -179,7 +179,7 @@ namespace WebdotNet.DataAccess.Migrations
                             Price = 13.99,
                             Price100 = 11.99,
                             Price50 = 12.99,
-                            Tilte = "Sapiens"
+                            Title = "Sapiens"
                         },
                         new
                         {
@@ -192,7 +192,7 @@ namespace WebdotNet.DataAccess.Migrations
                             Price = 11.99,
                             Price100 = 9.9900000000000002,
                             Price50 = 10.99,
-                            Tilte = "Bossypants"
+                            Title = "Bossypants"
                         },
                         new
                         {
@@ -205,7 +205,7 @@ namespace WebdotNet.DataAccess.Migrations
                             Price = 6.9900000000000002,
                             Price100 = 4.9900000000000002,
                             Price50 = 5.9900000000000002,
-                            Tilte = "Pride and Prejudice"
+                            Title = "Pride and Prejudice"
                         },
                         new
                         {
@@ -218,7 +218,7 @@ namespace WebdotNet.DataAccess.Migrations
                             Price = 9.9900000000000002,
                             Price100 = 7.9900000000000002,
                             Price50 = 8.9900000000000002,
-                            Tilte = "Catching Fire"
+                            Title = "Catching Fire"
                         },
                         new
                         {
@@ -231,7 +231,7 @@ namespace WebdotNet.DataAccess.Migrations
                             Price = 7.9900000000000002,
                             Price100 = 5.9900000000000002,
                             Price50 = 6.9900000000000002,
-                            Tilte = "Frankenstein"
+                            Title = "Frankenstein"
                         },
                         new
                         {
@@ -244,7 +244,7 @@ namespace WebdotNet.DataAccess.Migrations
                             Price = 8.9900000000000002,
                             Price100 = 6.9900000000000002,
                             Price50 = 7.9900000000000002,
-                            Tilte = "Neuromancer"
+                            Title = "Neuromancer"
                         },
                         new
                         {
@@ -257,7 +257,7 @@ namespace WebdotNet.DataAccess.Migrations
                             Price = 13.99,
                             Price100 = 11.99,
                             Price50 = 12.99,
-                            Tilte = "Guns, Germs, and Steel"
+                            Title = "Guns, Germs, and Steel"
                         });
                 });
 #pragma warning restore 612, 618
