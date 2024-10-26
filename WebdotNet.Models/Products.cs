@@ -47,8 +47,9 @@ namespace WebdotNet.Models
         [Display(Name = "Category Name")]
 
         public string Category { get; set; }
+        [Display(Name = "Link of image")]
+        public string imgUrl { get; set; }
 
-        
 
     }   
 }

@@ -29,7 +29,7 @@ namespace WebdotNet.Areas.Admin.Controllers
         //when we have input, we will create
         [HttpPost]
         public IActionResult Create(Products obj)
-        {
+        {   
             //Custom validation for system
             if (ModelState.IsValid)
             {
