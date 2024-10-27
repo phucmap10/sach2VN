@@ -1,9 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using WebdotNet.Models;
 
 namespace WebdotNet.DataAccess.Data
 {
-    public class ApplicationDbContext : DbContext
+    public class ApplicationDbContext : IdentityDbContext
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
@@ -14,6 +15,7 @@ namespace WebdotNet.DataAccess.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder); //this is needed when we use IdentityDbContext
             modelBuilder.Entity<Category>().HasData(
                 new Category { ID = 1, Name = "Action", DisplayOrder = 1 },
                 new Category { ID = 2, Name = "Horror", DisplayOrder = 2 },
