@@ -39,7 +39,7 @@ namespace WebdotNet.Areas.Admin.Controllers
         public IActionResult Create(Products obj, IFormFile? file)
         {
             string wwwRootPath = _webHostEnvironment.WebRootPath;
-            if(file != null)
+            if (file != null)
             {
                 string file_name = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
                 string productPath = Path.Combine(wwwRootPath, @"images\products");
@@ -50,12 +50,13 @@ namespace WebdotNet.Areas.Admin.Controllers
                 obj.imgUrl = @"\images\products\" + file_name;
             }
             //Custom validation for system
-            
-                _unitOfWork.Products.Add(obj);
-                _unitOfWork.Save();
-                TempData["success"] = "Products has been created successfully";
-                return RedirectToAction("Index");
-
+            if(ModelState.IsValid){ 
+            _unitOfWork.Products.Add(obj);
+            _unitOfWork.Save();
+            TempData["success"] = "Products has been created successfully";
+            return RedirectToAction("Index");
+        }
+            return View();
         }
         public IActionResult Edit(int? id)
         {
