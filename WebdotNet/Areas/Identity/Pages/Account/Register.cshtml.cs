@@ -104,9 +104,15 @@ namespace WebdotNet.Areas.Identity.Pages.Account
             [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
             public string ConfirmPassword { get; set; }
 
+            [ValidateNever]
             public string? Role { get; set; }
             [ValidateNever]
             public IEnumerable<SelectListItem> RoleList { get; set; }
+            [Required]
+            public string? Name { get; set; }
+            [Required]
+            public string? Address { get; set; }
+
         }
 
 
@@ -141,12 +147,14 @@ namespace WebdotNet.Areas.Identity.Pages.Account
 
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
+                user.Name = Input.Name;
+                user.Address = Input.Address;
                 var result = await _userManager.CreateAsync(user, Input.Password);
 
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User created a new account with password.");
-                    if(!String.IsNullOrEmpty(Input.Role)) {
+                    if(Input.Role != "Select Role") {
                         await _userManager.AddToRoleAsync(user, Input.Role); 
                     }
                     else
