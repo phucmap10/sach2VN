@@ -47,8 +47,18 @@ namespace WebdotNet.Areas.Customer.Controllers
             obj.Product = _unitOfWork.Products.Get(u => u.ID == obj.ProductId);
             obj.Id = 0;
             obj.Price = obj.Product.Price;
-            _unitOfWork.ShoppingCart.Add(obj);
+            ShoppingCart cartFromDB = _unitOfWork.ShoppingCart.Get(u => u.ApplicationUserId == userID && u.ProductId == obj.ProductId);
+            if(cartFromDB == null)
+            {
+                _unitOfWork.ShoppingCart.Add(obj);
+            }
+            else
+            {
+                cartFromDB.Count += obj.Count;
+                _unitOfWork.ShoppingCart.Update(cartFromDB);
+            }
             _unitOfWork.Save();
+            TempData["Success"] = "Added to cart!";
             return RedirectToAction(nameof(Index));
         }
 
