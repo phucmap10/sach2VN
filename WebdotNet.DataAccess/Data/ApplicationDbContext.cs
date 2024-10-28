@@ -14,6 +14,7 @@ namespace WebdotNet.DataAccess.Data
         public DbSet<Category> Categories { get; set; }
         public DbSet<Products> Products { get; set; }
         public DbSet<ApplicationUser> ApplicationUsers { get; set; }
+        public DbSet<ShoppingCart> ShoppingCarts { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -39,6 +40,9 @@ namespace WebdotNet.DataAccess.Data
                 new Products { ID = 9, Title = "Neuromancer", Description = "A science fiction novel that tells the story of a washed-up computer hacker.", Author = "William Gibson", ISBN = "9780441569595", ListPrice = 9.99, Price = 8.99, Price50 = 7.99, Price100 = 6.99, Category = "SciFi", imgUrl = "" },
                 new Products { ID = 10, Title = "Guns, Germs, and Steel", Description = "A history book that explores the factors that contributed to the development of human societies.", Author = "Jared Diamond", ISBN = "9780393354324", ListPrice = 14.99, Price = 13.99, Price50 = 12.99, Price100 = 11.99, Category = "History", imgUrl = "" }
             );
+
+
+            
         }
     }
 }

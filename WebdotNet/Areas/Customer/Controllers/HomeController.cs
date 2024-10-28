@@ -1,4 +1,6 @@
 using System.Diagnostics;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebdotNet.DataAccess.Repository.IRepository;
 using WebdotNet.Models;
@@ -25,8 +27,29 @@ namespace WebdotNet.Areas.Customer.Controllers
 
         public IActionResult Details(int id)
         {
-            Products product = _unitOfWork.Products.Get(u => u.ID == id);
-            return View(product);
+            ShoppingCart cart = new()
+            {
+                Product = _unitOfWork.Products.Get(u => u.ID == id),
+                Count = 1,
+                ProductId = id
+            };
+            return View(cart);
+        }
+
+        [HttpPost]
+        [Authorize]
+        public IActionResult Details(ShoppingCart obj)
+        {
+            var claimIdentity = (ClaimsIdentity)User.Identity;
+            var userID = claimIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+            obj.ApplicationUserId = userID;
+            obj.ApplicationUser = _unitOfWork.ApplicationUser.Get(u => u.Id == userID);
+            obj.Product = _unitOfWork.Products.Get(u => u.ID == obj.ProductId);
+            obj.Id = 0;
+            obj.Price = obj.Product.Price;
+            _unitOfWork.ShoppingCart.Add(obj);
+            _unitOfWork.Save();
+            return RedirectToAction(nameof(Index));
         }
 
         public IActionResult Privacy()

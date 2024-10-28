@@ -10,6 +10,8 @@ namespace WebdotNet.DataAccess.Repository.IRepository
     {
         ICategoryRepository Category { get; }
         IProductsRepository Products { get; }
+        IShoppingCartRepository ShoppingCart { get; }
+        IApplicationUserRepository ApplicationUser { get; }
         void Save();
     }
 }

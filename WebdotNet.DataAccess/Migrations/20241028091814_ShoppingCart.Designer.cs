@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebdotNet.DataAccess.Data;
 
@@ -11,9 +12,11 @@ using WebdotNet.DataAccess.Data;
 namespace WebdotNet.DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241028091814_ShoppingCart")]
+    partial class ShoppingCart
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -482,27 +485,27 @@ namespace WebdotNet.DataAccess.Migrations
 
             modelBuilder.Entity("WebdotNet.Models.ShoppingCart", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
-                    b.Property<string>("ApplicationUserId")
+                    b.Property<int>("ProductID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserID")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("Count")
-                        .HasColumnType("int");
+                    b.HasKey("ID");
 
-                    b.Property<int>("ProductId")
-                        .HasColumnType("int");
+                    b.HasIndex("ProductID");
 
-                    b.HasKey("Id");
-
-                    b.HasIndex("ApplicationUserId");
-
-                    b.HasIndex("ProductId");
+                    b.HasIndex("UserID");
 
                     b.ToTable("ShoppingCarts");
                 });
@@ -574,15 +577,15 @@ namespace WebdotNet.DataAccess.Migrations
 
             modelBuilder.Entity("WebdotNet.Models.ShoppingCart", b =>
                 {
-                    b.HasOne("WebdotNet.Models.ApplicationUser", "ApplicationUser")
+                    b.HasOne("WebdotNet.Models.Products", "Product")
                         .WithMany()
-                        .HasForeignKey("ApplicationUserId")
+                        .HasForeignKey("ProductID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("WebdotNet.Models.Products", "Product")
+                    b.HasOne("WebdotNet.Models.ApplicationUser", "ApplicationUser")
                         .WithMany()
-                        .HasForeignKey("ProductId")
+                        .HasForeignKey("UserID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
