@@ -42,6 +42,11 @@ namespace WebdotNet.Areas.Customer.Controllers
             }
             return View(ShoppingCartVM);
         }
+        public IActionResult Summary()
+        {
+            
+            return View();
+        }
         public IActionResult plus(int cartID)
         {
             var cartFromDb = _unitOfWork.ShoppingCart.Get(u => u.Id == cartID);
@@ -88,5 +93,6 @@ namespace WebdotNet.Areas.Customer.Controllers
                 return obj.Product.Price;
             }
         }
+        
     }
 }
