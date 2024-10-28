@@ -37,8 +37,8 @@ namespace WebdotNet.Areas.Customer.Controllers
             };
             foreach(var list in ShoppingCartVM.ShoppingCartList)
             {
-                double Price = GetPrice(list);
-                ShoppingCartVM.OrderTotal += (Price * list.Count);
+                list.Price = GetPrice(list);
+                ShoppingCartVM.OrderTotal += (list.Price * list.Count);
             }
             return View(ShoppingCartVM);
         }
