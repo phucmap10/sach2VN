@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using WebdotNet.DataAccess.Repository;
 using WebdotNet.DataAccess.Repository.IRepository;
 using WebdotNet.Models;
+using WebdotNet.Models.ViewModels;
 using WebdotNet.Utility;
 
 namespace WebdotNet.Areas.Admin.Controllers
@@ -21,6 +22,17 @@ namespace WebdotNet.Areas.Admin.Controllers
         public IActionResult Index()
         {
             return View();
+        }
+
+        public IActionResult Details(int orderID)
+        {
+            OrderVM orderVM = new()
+            {
+                orderHeader = _unitOfWork.OrderHeader.Get(u => u.ID == orderID),
+                orderDetail = _unitOfWork.OrderDetail.GetAll(o => o.OrderHeader.ID == orderID, includeProperties: "Product"),
+            };
+            orderVM.orderHeader.ApplicationUser = _unitOfWork.ApplicationUser.Get(o => o.Id == orderVM.orderHeader.ApplicationUserID);
+            return View(orderVM);
         }
 
         #region API CALLS
