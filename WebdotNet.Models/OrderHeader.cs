@@ -34,7 +34,8 @@ namespace WebdotNet.Models
         public string Name { get; set; }
         [Required]
         public string Address { get; set; }
-        [Required]
+        [Required(ErrorMessage = "Phone number is required.")]
+        [Phone(ErrorMessage = "Invalid phone number format.")]
         public string PhoneNumber { get; set; }
     }
 }

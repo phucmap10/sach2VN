@@ -6,6 +6,7 @@ using WebdotNet.DataAccess.Repository.IRepository;
 using WebdotNet.Models.ViewModels;
 using WebdotNet.Models;
 using ShoppingCart = WebdotNet.Models.ShoppingCart;
+using WebdotNet.Utility;
 
 namespace WebdotNet.Areas.Customer.Controllers
 {
@@ -16,6 +17,7 @@ namespace WebdotNet.Areas.Customer.Controllers
 
         private readonly ILogger<ShoppingCartController> _logger;
         private readonly IUnitOfWork _unitOfWork;
+        [BindProperty]
         public ShoppingCartVM ShoppingCartVM { get; set; }
 
         public ShoppingCartController(ILogger<ShoppingCartController> logger, IUnitOfWork unitOfWork)
@@ -64,6 +66,53 @@ namespace WebdotNet.Areas.Customer.Controllers
             }
             return View(ShoppingCartVM);
         }
+
+        [HttpPost]
+        [ActionName("Summary")]
+        public IActionResult SummaryPOST()
+        {
+            var claimIdentity = (ClaimsIdentity)User.Identity;
+            var userID = claimIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+            ShoppingCartVM.ShoppingCartList = _unitOfWork.ShoppingCart.GetAll(u => u.ApplicationUserId == userID, includeProperties: "Product");
+            ShoppingCartVM.OrderHeader.OrderDate = DateTime.Now;
+
+            ShoppingCartVM.OrderHeader.ApplicationUserID = userID;
+
+            foreach (var list in ShoppingCartVM.ShoppingCartList)
+            {
+                list.Price = GetPrice(list);
+                ShoppingCartVM.OrderHeader.OrderTotal += (list.Price * list.Count);
+            }
+            ShoppingCartVM.OrderHeader.OrderStatus = SD.StatusPending;
+            ShoppingCartVM.OrderHeader.PaymentStatus = SD.PaymentStatusPending;
+            
+             _unitOfWork.OrderHeader.Add(ShoppingCartVM.OrderHeader);
+             _unitOfWork.Save();
+            
+
+            foreach(var cart in ShoppingCartVM.ShoppingCartList)
+            {
+                OrderDetail orderDetail = new OrderDetail
+                {
+                    ProductId = cart.ProductId,
+                    OrderHeaderId = ShoppingCartVM.OrderHeader.ID,
+                    Price = cart.Price,
+                    Count = cart.Count
+                };
+                _unitOfWork.OrderDetail.Add(orderDetail);
+                _unitOfWork.Save();
+            }
+
+            return RedirectToAction(nameof(OrderConfirmation));
+        }
+
+
+        public IActionResult OrderConfirmation(int id)
+        {
+            return View(id);
+        }
+
+
         public IActionResult plus(int cartID)
         {
             var cartFromDb = _unitOfWork.ShoppingCart.Get(u => u.Id == cartID);
