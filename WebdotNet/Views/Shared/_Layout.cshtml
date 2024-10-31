@@ -27,12 +27,9 @@
                         <li class="nav-item">
                             <a class="nav-link" asp-controller="Home" asp-area="Customer" asp-action="Index">Home</a>
                         </li>
-                        
-                        @if(User.IsInRole("Admin")){
                             <li class="nav-item">
                                 <a class="nav-link" asp-controller="Order" asp-area="Admin" asp-action="Index">Order Management</a>
                             </li>
-                        }
 						@if (User.IsInRole("Admin"))
 						{
 						
