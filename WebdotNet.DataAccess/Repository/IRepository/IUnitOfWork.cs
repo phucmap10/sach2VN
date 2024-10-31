@@ -12,6 +12,8 @@ namespace WebdotNet.DataAccess.Repository.IRepository
         IProductsRepository Products { get; }
         IShoppingCartRepository ShoppingCart { get; }
         IApplicationUserRepository ApplicationUser { get; }
+        IOrderDetailRepository OrderDetail { get; }
+        IOrderHeaderRepository OrderHeader { get; }
         void Save();
     }
 }

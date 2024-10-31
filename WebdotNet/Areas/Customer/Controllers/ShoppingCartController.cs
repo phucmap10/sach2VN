@@ -32,20 +32,37 @@ namespace WebdotNet.Areas.Customer.Controllers
 
             ShoppingCartVM = new ShoppingCartVM()
             {
-                ShoppingCartList = _unitOfWork.ShoppingCart.GetAll(u => u.ApplicationUserId == userID, includeProperties: "Product")
-
+                ShoppingCartList = _unitOfWork.ShoppingCart.GetAll(u => u.ApplicationUserId == userID, includeProperties: "Product"),
+                OrderHeader = new()
             };
             foreach (var list in ShoppingCartVM.ShoppingCartList)
             {
                 list.Price = GetPrice(list);
-                ShoppingCartVM.OrderTotal += (list.Price * list.Count);
+                ShoppingCartVM.OrderHeader.OrderTotal += (list.Price * list.Count);
             }
             return View(ShoppingCartVM);
         }
         public IActionResult Summary()
         {
-            
-            return View();
+            var claimIdentity = (ClaimsIdentity)User.Identity;
+            var userID = claimIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+            ShoppingCartVM = new ShoppingCartVM()
+            {
+                ShoppingCartList = _unitOfWork.ShoppingCart.GetAll(u => u.ApplicationUserId == userID, includeProperties: "Product"),
+                OrderHeader = new(),
+            };
+            ShoppingCartVM.OrderHeader.ApplicationUser = _unitOfWork.ApplicationUser.Get(u => u.Id == userID);
+            ShoppingCartVM.OrderHeader.Name = ShoppingCartVM.OrderHeader.ApplicationUser.Name;
+            ShoppingCartVM.OrderHeader.PhoneNumber = ShoppingCartVM.OrderHeader.ApplicationUser.PhoneNumber;
+            ShoppingCartVM.OrderHeader.Address = ShoppingCartVM.OrderHeader.ApplicationUser.Address;
+
+
+            foreach (var list in ShoppingCartVM.ShoppingCartList)
+            {
+                list.Price = GetPrice(list);
+                ShoppingCartVM.OrderHeader.OrderTotal += (list.Price * list.Count);
+            }
+            return View(ShoppingCartVM);
         }
         public IActionResult plus(int cartID)
         {
