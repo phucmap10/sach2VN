@@ -7,6 +7,8 @@ using WebdotNet.Models.ViewModels;
 using WebdotNet.Models;
 using ShoppingCart = WebdotNet.Models.ShoppingCart;
 using WebdotNet.Utility;
+using static System.Net.WebRequestMethods;
+using Stripe.Checkout;
 
 namespace WebdotNet.Areas.Customer.Controllers
 {
@@ -17,6 +19,7 @@ namespace WebdotNet.Areas.Customer.Controllers
 
         private readonly ILogger<ShoppingCartController> _logger;
         private readonly IUnitOfWork _unitOfWork;
+
         [BindProperty]
         public ShoppingCartVM ShoppingCartVM { get; set; }
 
@@ -85,12 +88,12 @@ namespace WebdotNet.Areas.Customer.Controllers
             }
             ShoppingCartVM.OrderHeader.OrderStatus = SD.StatusPending;
             ShoppingCartVM.OrderHeader.PaymentStatus = SD.PaymentStatusPending;
-            
-             _unitOfWork.OrderHeader.Add(ShoppingCartVM.OrderHeader);
-             _unitOfWork.Save();
-            
 
-            foreach(var cart in ShoppingCartVM.ShoppingCartList)
+            _unitOfWork.OrderHeader.Add(ShoppingCartVM.OrderHeader);
+            _unitOfWork.Save();
+
+
+            foreach (var cart in ShoppingCartVM.ShoppingCartList)
             {
                 OrderDetail orderDetail = new OrderDetail
                 {
@@ -102,14 +105,45 @@ namespace WebdotNet.Areas.Customer.Controllers
                 _unitOfWork.OrderDetail.Add(orderDetail);
                 _unitOfWork.Save();
             }
+            var domain = "https://localhost:7034/";
+            var options = new Stripe.Checkout.SessionCreateOptions
+            {
+                SuccessUrl =domain + $"customer/ShoppingCart/OrderConfirmation?id={ShoppingCartVM.OrderHeader.ID}",
+                CancelUrl = domain + $"customer/ShoppingCart/Index",
+                LineItems = new List<Stripe.Checkout.SessionLineItemOptions>(),
+                Mode = "payment",
+            };
+            foreach(var item in ShoppingCartVM.ShoppingCartList)
+            {
+                var SessionLineItem = new SessionLineItemOptions
+                {
+                    PriceData = new SessionLineItemPriceDataOptions
+                    {
+                        UnitAmount = (long)(item.Price * 100),// $20.10 => 2010
+                        Currency = "usd",
+                        ProductData = new SessionLineItemPriceDataProductDataOptions
+                        {
+                            Name = item.Product.Title
+                        }
+                    },
+                    Quantity = item.Count
+                };
+                options.LineItems.Add(SessionLineItem); // add each item into LineItems
+            }
+            var service = new Stripe.Checkout.SessionService();
+            Session session = service.Create(options);
+            _unitOfWork.OrderHeader.UpdateStripePaymentID(ShoppingCartVM.OrderHeader.ID, session.Id, session.PaymentIntentId);
+            _unitOfWork.Save();
+            Response.Headers.Add("Location", session.Url);
+            return new StatusCodeResult(303);
 
-            return RedirectToAction(nameof(OrderConfirmation));
         }
 
-
+        [Authorize]
         public IActionResult OrderConfirmation(int id)
         {
-            return View(id);
+            OrderHeader obj = _unitOfWork.OrderHeader.Get(u => u.ID == id);
+            return View(obj);
         }
 
 
@@ -159,6 +193,6 @@ namespace WebdotNet.Areas.Customer.Controllers
                 return obj.Product.Price;
             }
         }
-        
+
     }
 }

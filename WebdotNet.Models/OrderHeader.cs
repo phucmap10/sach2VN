@@ -28,6 +28,7 @@ namespace WebdotNet.Models
         public DateTime PaymentDate { get; set; }
         public DateTime PaymentDueDate { get; set; }
 
+        public string? SessionID { get; set; }
         public string? TransactionID { get; set; }
 
         [Required]

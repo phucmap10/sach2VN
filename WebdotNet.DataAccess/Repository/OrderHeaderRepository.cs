@@ -22,5 +22,33 @@ namespace WebdotNet.DataAccess.Repository
         {
             _db.OrderHeaders.Update(orderHeader);
         }
+        public void UpdateStatus(int id, string status, string? paymentStatus = null)
+        {
+            var orderHeader = _db.OrderHeaders.FirstOrDefault(o => o.ID == id);
+            if (orderHeader != null)
+            {
+                orderHeader.OrderStatus = status;
+                if (!string.IsNullOrEmpty(paymentStatus))
+                {
+                    orderHeader.PaymentStatus = paymentStatus;
+                }
+            }
+        }
+        public void UpdateStripePaymentID(int id, string sessionId, string paymentID)
+        {
+            var orderHeader = _db.OrderHeaders.FirstOrDefault(o => o.ID == id);
+            if (orderHeader != null)
+            {
+                if(!string.IsNullOrEmpty(sessionId))
+                {
+                    orderHeader.SessionID = sessionId;
+                }
+                if(!string.IsNullOrEmpty(paymentID))
+                {
+                    orderHeader.TransactionID = paymentID;
+                    orderHeader.PaymentDate = DateTime.Now;
+                }
+            }
+        }
     }
 }
