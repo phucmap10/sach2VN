@@ -143,6 +143,23 @@ namespace WebdotNet.Areas.Customer.Controllers
         public IActionResult OrderConfirmation(int id)
         {
             OrderHeader obj = _unitOfWork.OrderHeader.Get(u => u.ID == id);
+            obj.ApplicationUser = _unitOfWork.ApplicationUser.Get(u => u.Id == obj.ApplicationUserID);
+            var service = new Stripe.Checkout.SessionService();
+            Session session = service.Get(obj.SessionID);
+            if (session.PaymentStatus.ToLower() == "paid")
+            {
+                _unitOfWork.OrderHeader.UpdateStripePaymentID(obj.ID, session.Id, session.PaymentIntentId);
+                _unitOfWork.OrderHeader.UpdateStatus(obj.ID, SD.StatusApprove, SD.PaymentStatusApprove);
+                _unitOfWork.Save();
+            }
+            else
+            {
+                _unitOfWork.OrderHeader.UpdateStatus(obj.ID, SD.StatusCancelled, SD.PaymentStatusRejected);
+            }
+
+            List<ShoppingCart> shoppingCart = _unitOfWork.ShoppingCart.GetAll(u => u.ApplicationUserId == obj.ApplicationUserID).ToList();
+            _unitOfWork.ShoppingCart.RemoveInRange(shoppingCart);
+            _unitOfWork.Save();
             return View(obj);
         }
 
