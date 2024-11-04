@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\WebdotNet.Models\WebdotNet.Models.csproj" />
+    <ProjectReference Include="..\WebdotNet.Ultility\WebdotNet.Utility.csproj" />
   </ItemGroup>
 
   <ItemGroup>

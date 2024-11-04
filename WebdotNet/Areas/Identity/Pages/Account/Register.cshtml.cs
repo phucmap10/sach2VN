@@ -154,13 +154,7 @@ namespace WebdotNet.Areas.Identity.Pages.Account
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User created a new account with password.");
-                    if(Input.Role != "Select Role") {
-                        await _userManager.AddToRoleAsync(user, Input.Role); 
-                    }
-                    else
-                    {
-                        await _userManager.AddToRoleAsync(user, SD.Role_User_Individual);
-                    }
+                    await _userManager.AddToRoleAsync(user, SD.Role_User_Individual);
                     var userId = await _userManager.GetUserIdAsync(user);
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
