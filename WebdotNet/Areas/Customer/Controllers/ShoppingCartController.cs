@@ -131,11 +131,20 @@ namespace WebdotNet.Areas.Customer.Controllers
                 options.LineItems.Add(SessionLineItem); // add each item into LineItems
             }
             var service = new Stripe.Checkout.SessionService();
-            Session session = service.Create(options);
-            _unitOfWork.OrderHeader.UpdateStripePaymentID(ShoppingCartVM.OrderHeader.ID, session.Id, session.PaymentIntentId);
-            _unitOfWork.Save();
-            Response.Headers.Add("Location", session.Url);
-            return new StatusCodeResult(303);
+            if(options.LineItems.Count != 0)
+            {
+                Session session = service.Create(options);
+                _unitOfWork.OrderHeader.UpdateStripePaymentID(ShoppingCartVM.OrderHeader.ID, session.Id, session.PaymentIntentId);
+                _unitOfWork.Save();
+                Response.Headers.Add("Location", session.Url);
+                return new StatusCodeResult(303);
+            }
+            else
+            {
+                RedirectToAction(nameof(Index));
+                TempData["Error"] = "Cart has no item";
+            }
+            return RedirectToAction(nameof(Index));
 
         }
 

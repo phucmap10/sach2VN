@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Stripe;
 using WebdotNet.DataAccess.Repository;
 using WebdotNet.DataAccess.Repository.IRepository;
 using WebdotNet.Models;
@@ -15,6 +16,8 @@ namespace WebdotNet.Areas.Admin.Controllers
     public class OrderController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
+        [BindProperty]
+        public OrderVM orderVM { get; set; }
         public OrderController(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
@@ -26,7 +29,7 @@ namespace WebdotNet.Areas.Admin.Controllers
 
         public IActionResult Details(int orderID)
         {
-            OrderVM orderVM = new()
+            orderVM = new()
             {
                 orderHeader = _unitOfWork.OrderHeader.Get(u => u.ID == orderID),
                 orderDetail = _unitOfWork.OrderDetail.GetAll(o => o.OrderHeader.ID == orderID, includeProperties: "Product"),
@@ -35,6 +38,60 @@ namespace WebdotNet.Areas.Admin.Controllers
             return View(orderVM);
         }
 
+        [HttpPost]
+        [Authorize(Roles = SD.Role_Admin + "," + SD.Role_Employee)]
+        public IActionResult UpdateOrderDetails()
+        {
+            var OrderHeaderfromDb = _unitOfWork.OrderHeader.Get(u => u.ID == orderVM.orderHeader.ID);
+            if(string.IsNullOrEmpty(orderVM.orderHeader.Carrier))
+            {
+                OrderHeaderfromDb.Carrier = "Not Shipped";
+            }
+            else
+            {
+                OrderHeaderfromDb.Carrier = orderVM.orderHeader.Carrier;
+            }
+            _unitOfWork.OrderHeader.Update(OrderHeaderfromDb);
+            TempData["Success"] = "Order Details Updated Successfully";
+            _unitOfWork.Save();
+            return RedirectToAction(nameof(Details), new{orderID = OrderHeaderfromDb.ID });
+        }
+
+        [HttpPost]
+        [Authorize(Roles = SD.Role_Admin + "," + SD.Role_Employee)]
+        public IActionResult ShipOrder()
+        {
+            var OrderHeaderfromDb = _unitOfWork.OrderHeader.Get(u => u.ID == orderVM.orderHeader.ID);
+            if (string.IsNullOrEmpty(orderVM.orderHeader.Carrier) || orderVM.orderHeader.Carrier == "Not Shipped")
+            {
+                OrderHeaderfromDb.Carrier = "Shopee Express";
+            }
+            else
+            {
+                OrderHeaderfromDb.Carrier = orderVM.orderHeader.Carrier;
+            }
+            _unitOfWork.OrderHeader.Update(OrderHeaderfromDb);
+            TempData["Success"] = "Order Details Shipped Successfully";
+            _unitOfWork.Save();
+            return RedirectToAction(nameof(Details), new { orderID = OrderHeaderfromDb.ID });
+        }
+
+        [HttpPost]
+        public IActionResult CancelOrder()
+        {
+            var OrderHeaderfromDb = _unitOfWork.OrderHeader.Get(u => u.ID == orderVM.orderHeader.ID);
+            var options = new RefundCreateOptions
+            {
+                Reason = RefundReasons.RequestedByCustomer,
+                PaymentIntent = orderVM.orderHeader.TransactionID
+            };
+            var service = new RefundService();
+            Refund refund = service.Create(options);
+            _unitOfWork.OrderHeader.UpdateStatus(orderVM.orderHeader.ID, SD.StatusCancelled, SD.StatusRefunded);
+            _unitOfWork.Save();
+            TempData["Success"] = "Order Cancelled";
+            return RedirectToAction(nameof(Details), new { orderID = OrderHeaderfromDb.ID });
+        }
         #region API CALLS
         [HttpGet]
         public IActionResult GetAll(string status)
