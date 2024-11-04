@@ -20,18 +20,24 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
     {
         private readonly UserManager<IdentityUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly ApplicationDbContext _db;
         private readonly IUnitOfWork _unitOfWork;
-        public UserController(UserManager<IdentityUser> userManager, IUnitOfWork unitOfWork, RoleManager<IdentityRole> roleManager)
+        public UserController(UserManager<IdentityUser> userManager, IUnitOfWork unitOfWork, RoleManager<IdentityRole> roleManager, ApplicationDbContext db)
         {
             _unitOfWork = unitOfWork;
             _roleManager = roleManager;
             _userManager = userManager;
+            _db = db;
         }
         public IActionResult Index()
         {
             return View();
         }
 
+        public IActionResult Create()
+        {
+            return View();
+        }
 
         #region API CALLS
 
@@ -39,6 +45,8 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
         public IActionResult GetAll()
         {
             List<ApplicationUser> objUserList = _unitOfWork.ApplicationUser.GetAll().ToList();
+            var usrRole = _db.UserRoles.ToList();
+            var roles = _db.Roles.ToList();
 
             return Json(new { data = objUserList });
         }
